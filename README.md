@@ -10,7 +10,7 @@ This document outlines the steps required to integrate the `Mooncake` module int
 ### 1. Add the Mooncake Module as a Dependency
 In the host app’s `pubspec.yaml`:
 
-1. Add the `Mooncake` module as a dependency using either:
+1. Add the `x` module as a dependency using either:
    - **Local path**: Point to the location where the Mooncake module is located.
    - **Git repository**: If hosted on a version control system, provide the URL and branch.
 
