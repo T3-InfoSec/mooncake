@@ -17,7 +17,7 @@ class _MooncakeViewState extends State<MooncakeView> {
   String _currentOrder = '';
   List<String> _nOrder = [];
   List<String> wordSource = [];
-  FormosaTheme formosaTheme = FormosaTheme.formosaGLobal;
+  FormosaTheme formosaTheme = FormosaTheme.bip39;
   int sentenceCount = 1;
   List<String> addedWordToSentence = [];
   late Formosa formosa;
@@ -25,7 +25,7 @@ class _MooncakeViewState extends State<MooncakeView> {
   @override
   void initState() {
     super.initState();
-    formosa = Formosa(formosaTheme: formosaTheme);
+    formosa = Formosa(formosaTheme: formosaTheme, entropy: []);
     setState(() {
       _nOrder = formosa.formosaTheme.data.naturalOrder;
       _currentOrder = _nOrder[_selectedOrderIndex];

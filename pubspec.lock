@@ -102,14 +102,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
-  cryptography:
-    dependency: transitive
-    description:
-      name: cryptography
-      sha256: d146b76d33d94548cf035233fbc2f4338c1242fa119013bead807d033fc4ae05
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.7.0"
   device_info_plus:
     dependency: transitive
     description:
@@ -463,9 +455,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/global_formosa"
-      resolved-ref: "9e52a0f930207a407dbbc2948dac52a3957bdaae"
-      url: "https://github.com/T3-InfoSec/t3-formosa-dart.git"
+      ref: development
+      resolved-ref: "9434dae9005160bbe3b6facce1d38e699052d867"
+      url: "git@github.com:T3-InfoSec/t3-formosa-dart.git"
     source: git
     version: "0.1.0-dev"
   term_glyph:
@@ -548,14 +540,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.5"
-  volume_key_board:
-    dependency: transitive
-    description:
-      name: volume_key_board
-      sha256: b51a03ad332dd95d022320208630868cf386cd8b0c08af2c1bddda5dbc95f069
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
   watcher:
     dependency: transitive
     description:
