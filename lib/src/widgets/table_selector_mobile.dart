@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mooncake/src/controller/indexation.dart';
-import 'package:mooncake/src/grid_builder.dart';
+import 'package:mooncake/src/controller/indexation_service.dart';
+import 'package:mooncake/src/widgets/index_word_grid_builder.dart';
 import 'package:mooncake_plugin/mooncake_plugin.dart';
 
 class TableSelectorMobile extends StatefulWidget {

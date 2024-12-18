@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mooncake/src/table_selector_desktop.dart';
-import 'package:mooncake/src/table_selector_mobile.dart';
-import 'package:t3_formosa/formosa.dart';
+import 'package:mooncake/src/widgets/table_selector_desktop.dart';
+import 'package:mooncake/src/widgets/table_selector_mobile.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 
 class MooncakeView extends StatefulWidget {
   const MooncakeView({super.key});
@@ -17,17 +17,15 @@ class _MooncakeViewState extends State<MooncakeView> {
   String _currentOrder = '';
   List<String> _nOrder = [];
   List<String> wordSource = [];
-  FormosaTheme formosaTheme = FormosaTheme.formosaGLobal;
+  FormosaTheme formosaTheme = FormosaTheme.bip39;
   int sentenceCount = 1;
   List<String> addedWordToSentence = [];
-  late Formosa formosa;
 
   @override
   void initState() {
     super.initState();
-    formosa = Formosa(formosaTheme: formosaTheme);
     setState(() {
-      _nOrder = formosa.formosaTheme.data.naturalOrder;
+      _nOrder = formosaTheme.data.naturalOrder;
       _currentOrder = _nOrder[_selectedOrderIndex];
       wordSource = _getListByOrder(_currentOrder);
     });
@@ -121,6 +119,6 @@ class _MooncakeViewState extends State<MooncakeView> {
   }
 
   List<String> _getListByOrder(String order) {
-    return List.from(formosa.formosaTheme.data[order]["TOTAL_LIST"]);
+    return List.from(formosaTheme.data[order]["TOTAL_LIST"]);
   }
 }

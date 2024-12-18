@@ -9,17 +9,13 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-
   flutter:
     sdk: flutter
-  mooncake_plugin:
+  vibration: ^2.0.1
+  t3_crypto_objects:
     git:
-      url: https://github.com/c0d3sw0t/mooncake_plugin.git
-
-  t3_formosa:
-    git:
-      url: https://github.com/T3-InfoSec/t3-formosa-dart.git
-      ref: feature/global_formosa
+      url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git
+      ref: initialise_objects
       
 
 dev_dependencies:

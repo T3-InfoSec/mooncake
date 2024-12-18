@@ -1,12 +1,11 @@
+// TODO: Complete the copyright.
+// Copyright (c) 2024, ...
+
 library mooncake;
 
-import 'package:flutter/material.dart';
-import 'package:mooncake/src/mooncake_view.dart';
-
-class Mooncake {
-  static Future<String?> show(BuildContext context) async {
-    final result = await showDialog<String?>(context: context, builder: (context) => const MooncakeView());
-
-    return result;
-  }
-}
+export 'src/controller/indexation_service.dart';
+export 'src/controller/vibration_service.dart';
+export 'src/widgets/index_word_grid_builder.dart';
+export 'src/widgets/combination_icons.dart';
+export 'src/widgets/table_selector_mobile.dart';
+export 'src/widgets/table_selector_desktop.dart';
