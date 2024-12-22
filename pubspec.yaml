@@ -17,7 +17,7 @@ dependencies:
       url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git
       ref: initialise_objects
   mooncake_plugin:
-    path: ./
+    path: mooncake_plugin
       
 
 dev_dependencies:
