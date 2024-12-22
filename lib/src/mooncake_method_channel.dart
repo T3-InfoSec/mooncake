@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:mooncake_plugin/mooncake_plugin.dart';
+import 'package:mooncake/src/mooncake_plugin.dart';
 import 'mooncake_platform_interface.dart';
 
 /// An implementation of [MooncakePlatform] that uses method channels.

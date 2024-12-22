@@ -17,7 +17,7 @@ class _MooncakeViewState extends State<MooncakeView> {
   String _currentOrder = '';
   List<String> _nOrder = [];
   List<String> wordSource = [];
-  FormosaTheme formosaTheme = FormosaTheme.bip39;
+  FormosaTheme formosaTheme = FormosaTheme.global;
   int sentenceCount = 1;
   List<String> addedWordToSentence = [];
 

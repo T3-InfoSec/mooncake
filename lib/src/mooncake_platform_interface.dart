@@ -1,4 +1,4 @@
-import 'package:mooncake_plugin/mooncake_plugin.dart';
+import 'package:mooncake/src/mooncake_plugin.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'mooncake_method_channel.dart';

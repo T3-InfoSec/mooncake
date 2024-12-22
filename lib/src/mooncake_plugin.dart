@@ -1,4 +1,4 @@
-import 'package:mooncake_plugin/mooncake_method_channel.dart';
+import 'package:mooncake/src/mooncake_method_channel.dart';
 import 'package:vibration/vibration.dart';
 
 class MooncakePlugin {
