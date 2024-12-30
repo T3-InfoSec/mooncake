@@ -194,8 +194,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
     for (var gridWord in _gridWords!) {
       String gridKey = gridWord.split('-')[0].toLowerCase();
       if (_userInput.toLowerCase() == gridKey) {
-        widget.onWordSelected(isHighlighted, gridKey);
         isHighlighted = true;
+        widget.onWordSelected(isHighlighted, gridKey);
         break;
       }
     }
@@ -228,14 +228,14 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
           return Column(
             children: [
-              // // Display the user input for visual feedback
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Text(
-              //     'User Input: $_userInput',
-              //     style: const TextStyle(fontSize: 18),
-              //   ),
-              // ),
+              // Display the user input for visual feedback
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'User Input: $_userInput',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Column(
@@ -265,7 +265,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                         SizedBox(
                           width: cellSize,
                           height: gridHeight,
-                          child: Column(
+                          child: SingleChildScrollView(
+                            child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: _verticalLeftLabels!
                                 .map((label) => Container(
@@ -280,6 +281,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                                       child: Text(label.toUpperCase()),
                                     ))
                                 .toList(),
+                          ),
                           ),
                         ),
                         Expanded(
@@ -313,7 +315,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                         SizedBox(
                           width: cellSize,
                           height: gridHeight,
-                          child: Column(
+                          child: SingleChildScrollView(
+                            child: Column(
                             children: _verticalRightLabels!
                                 .map((label) => Container(
                                       width: cellSize,
@@ -328,6 +331,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                                     ))
                                 .toList(),
                           ),
+                          )
                         ),
                       ],
                     ),

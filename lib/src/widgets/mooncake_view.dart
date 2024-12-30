@@ -56,10 +56,16 @@ class _MooncakeViewState extends State<MooncakeView> {
                               title: const Text("Done"),
                               content: const Text('Process is completed!'),
                               actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(addedWordToSentence.join(' ')),
-                                  child: const Text('OK'),
-                                ),
+                                  TextButton(
+                                    onPressed: () {
+                                      String sentence = addedWordToSentence.join(' ');
+                                      if (sentence.isNotEmpty) {
+                                        Navigator.of(context).pop(); 
+                                        Navigator.of(context).pop(sentence);
+                                      }
+                                    },
+                                    child: const Text('OK'),
+                                  ),
                               ],
                             ),
                           );
@@ -97,7 +103,13 @@ class _MooncakeViewState extends State<MooncakeView> {
                                 content: const Text('Process is completed!'),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
+                                    onPressed: () {
+                                      String sentence = addedWordToSentence.join(' ');
+                                      if (sentence.isNotEmpty) {
+                                        Navigator.of(context).pop(); 
+                                        Navigator.of(context).pop(sentence);
+                                      }
+                                    },
                                     child: const Text('OK'),
                                   ),
                                 ],
