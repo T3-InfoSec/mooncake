@@ -18,8 +18,26 @@ class TableSelectorDesktop extends StatefulWidget {
 }
 
 class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
-  final List<String> keyboardCharacters = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
-  final List<String> leftLabelCharacters = ['k', 'a', 's', 'd', 'f', 'j', 'l', ';'];
+  final List<String> keyboardCharacters = [
+    'a',
+    's',
+    'd',
+    'f',
+    'j',
+    'k',
+    'l',
+    ';'
+  ];
+  final List<String> leftLabelCharacters = [
+    'k',
+    'a',
+    's',
+    'd',
+    'f',
+    'j',
+    'l',
+    ';'
+  ];
 
   String _userInput = '';
   List<String>? _horizontalLabels;
@@ -54,9 +72,10 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   void _generateLabelsAndGridWords() {
     final horizontalLabels = List.of(keyboardCharacters)..shuffle();
     final verticalLeftLabels = _generateShuffledLeftLabels();
-    final verticalRightLabels = _generateRepeatedRightLabels(verticalLeftLabels.length, verticalLeftLabels);
-    final gridWords = _generateGridWordsWithLabels(
-        horizontalLabels, verticalLeftLabels, verticalRightLabels, 32, horizontalLabels.length);
+    final verticalRightLabels = _generateRepeatedRightLabels(
+        verticalLeftLabels.length, verticalLeftLabels);
+    final gridWords = _generateGridWordsWithLabels(horizontalLabels,
+        verticalLeftLabels, verticalRightLabels, 32, horizontalLabels.length);
 
     setState(() {
       _horizontalLabels = horizontalLabels;
@@ -75,7 +94,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
     return leftLabels.expand((x) => x).toList();
   }
 
-  List<String> _generateRepeatedRightLabels(int length, List<String> leftLabels) {
+  List<String> _generateRepeatedRightLabels(
+      int length, List<String> leftLabels) {
     List<String> repeatedRightLabels = [];
 
     while (repeatedRightLabels.length < length) {
@@ -92,7 +112,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
           sameCharCount++;
         }
 
-        if (_isValidSwap(repeatedRightLabels, i, j, leftLabels, sameCharCount)) {
+        if (_isValidSwap(
+            repeatedRightLabels, i, j, leftLabels, sameCharCount)) {
           swapIndex = j;
           break;
         }
@@ -108,7 +129,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
     return repeatedRightLabels;
   }
 
-  bool _isValidSwap(List<String> list, int i, int j, List<String> leftLabels, int sameCharCount) {
+  bool _isValidSwap(List<String> list, int i, int j, List<String> leftLabels,
+      int sameCharCount) {
     if (list[j] == leftLabels[i] && sameCharCount > 1) {
       return false;
     }
@@ -125,7 +147,11 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   }
 
   List<String> _generateGridWordsWithLabels(
-      List<String> topLabels, List<String> leftLabels, List<String> rightLabels, int rowCount, int colCount) {
+      List<String> topLabels,
+      List<String> leftLabels,
+      List<String> rightLabels,
+      int rowCount,
+      int colCount) {
     List<String> combinedWords = [];
     int wordIndex = 0;
 
@@ -134,7 +160,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
     for (int row = 0; row < rowCount; row++) {
       for (int col = 0; col < colCount; col++) {
-        String combinedLabel = '${topLabels[col]}${leftLabels[row]}${rightLabels[row]}';
+        String combinedLabel =
+            '${topLabels[col]}${leftLabels[row]}${rightLabels[row]}';
 
         // Ensure that we don't exceed the number of available unique words
         if (wordIndex >= shuffledWordSource.length) {
@@ -153,7 +180,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   // This function handles the keyboard input
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      final key = event.logicalKey.keyLabel;
+      final key = event.logicalKey.keyLabel.toLowerCase();
 
       // If Enter or Tab is pressed, trigger word selection
       if (event.logicalKey == LogicalKeyboardKey.enter) {
@@ -170,14 +197,16 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
       }
 
       // Add input if it's a valid character
-      if (['a', 's', 'd', 'f', 'j', 'k', 'l', ';'].contains(key.toLowerCase())) {
+      if (['a', 's', 'd', 'f', 'j', 'k', 'l', ';']
+          .contains(key)) {
         setState(() {
           _userInput += key; // Append valid key to the user input
         });
       }
 
       // Handle Backspace for correcting input
-      if (event.logicalKey == LogicalKeyboardKey.backspace && _userInput.isNotEmpty) {
+      if (event.logicalKey == LogicalKeyboardKey.backspace &&
+          _userInput.isNotEmpty) {
         setState(() {
           _userInput = '';
         });
@@ -193,13 +222,13 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
     for (var gridWord in _gridWords!) {
       String gridKey = gridWord.split('-')[0].toLowerCase();
-      if (_userInput.toLowerCase() == gridKey) {
+      String word = gridWord.split('-')[1].toLowerCase();
+      if (_userInput == gridKey) {
         isHighlighted = true;
-        widget.onWordSelected(isHighlighted, gridKey);
+        widget.onWordSelected(isHighlighted, word);
         break;
       }
     }
-
 
     // Reset the user input after selection
     setState(() {
@@ -222,7 +251,9 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
       autofocus: true,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final double cellSize = (constraints.maxHeight / (_horizontalLabels!.length + 3)).clamp(40.0, 100.0);
+          final double cellSize =
+              (constraints.maxHeight / (_horizontalLabels!.length + 3))
+                  .clamp(40.0, 100.0);
           const int rows = 32;
           final double gridHeight = cellSize * rows;
 
@@ -232,7 +263,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'User Input: $_userInput',
+                  _userInput.toLowerCase(),
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
@@ -251,7 +282,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                               alignment: Alignment.center,
                               decoration: const BoxDecoration(
                                 border: Border(
-                                  bottom: BorderSide(color: Colors.black, width: 0.5),
+                                  bottom: BorderSide(
+                                      color: Colors.black, width: 0.5),
                                 ),
                               ),
                               child: Text(label),
@@ -267,21 +299,23 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                           height: gridHeight,
                           child: SingleChildScrollView(
                             child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: _verticalLeftLabels!
-                                .map((label) => Container(
-                                      width: cellSize,
-                                      height: cellSize,
-                                      alignment: Alignment.centerRight,
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(color: Colors.black, width: 0.5),
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: _verticalLeftLabels!
+                                  .map((label) => Container(
+                                        width: cellSize,
+                                        height: cellSize,
+                                        alignment: Alignment.centerRight,
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            right: BorderSide(
+                                                color: Colors.black,
+                                                width: 0.5),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(label.toUpperCase()),
-                                    ))
-                                .toList(),
-                          ),
+                                        child: Text(label.toUpperCase()),
+                                      ))
+                                  .toList(),
+                            ),
                           ),
                         ),
                         Expanded(
@@ -289,20 +323,28 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                             padding: EdgeInsets.zero,
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: _horizontalLabels!.length,
                               childAspectRatio: 1.5,
                             ),
                             itemCount: _gridWords!.length,
                             itemBuilder: (context, index) {
-                              String gridWord = _gridWords![index].split('-')[0].toLowerCase();
-                              bool isHighlighted = gridWord == _userInput.toLowerCase();
+                              String gridWord = _gridWords![index]
+                                  .split('-')[0]
+                                  .toLowerCase();
+                              bool isHighlighted =
+                                  gridWord == _userInput.toLowerCase();
 
                               return Container(
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: isHighlighted ? Colors.green.withOpacity(0.3) : Colors.transparent,
-                                  border: Border.all(color: Colors.black.withOpacity(0.5), width: 0.5),
+                                  color: isHighlighted
+                                      ? Colors.green.withOpacity(0.3)
+                                      : Colors.transparent,
+                                  border: Border.all(
+                                      color: Colors.black.withOpacity(0.5),
+                                      width: 0.5),
                                 ),
                                 child: Text(
                                   _gridWords![index],
@@ -313,26 +355,27 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
                           ),
                         ),
                         SizedBox(
-                          width: cellSize,
-                          height: gridHeight,
-                          child: SingleChildScrollView(
-                            child: Column(
-                            children: _verticalRightLabels!
-                                .map((label) => Container(
-                                      width: cellSize,
-                                      height: cellSize,
-                                      alignment: Alignment.centerLeft,
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          left: BorderSide(color: Colors.black, width: 0.5),
-                                        ),
-                                      ),
-                                      child: Text(label),
-                                    ))
-                                .toList(),
-                          ),
-                          )
-                        ),
+                            width: cellSize,
+                            height: gridHeight,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: _verticalRightLabels!
+                                    .map((label) => Container(
+                                          width: cellSize,
+                                          height: cellSize,
+                                          alignment: Alignment.centerLeft,
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                              left: BorderSide(
+                                                  color: Colors.black,
+                                                  width: 0.5),
+                                            ),
+                                          ),
+                                          child: Text(label),
+                                        ))
+                                    .toList(),
+                              ),
+                            )),
                       ],
                     ),
                   ],

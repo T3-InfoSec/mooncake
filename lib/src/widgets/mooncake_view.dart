@@ -34,38 +34,88 @@ class _MooncakeViewState extends State<MooncakeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: wordSource.isEmpty
-            ? const SizedBox()
-            : LayoutBuilder(builder: (context, constraints) {
-                if (Platform.isAndroid || Platform.isIOS) {
-                  return TableSelectorMobile(
+      body: wordSource.isEmpty
+          ? const SizedBox()
+          : LayoutBuilder(builder: (context, constraints) {
+              if (Platform.isAndroid || Platform.isIOS) {
+                return TableSelectorMobile(
+                  wordSource: wordSource,
+                  wLabel:
+                      '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
+                  onWordSelected: (isValid, word) async {
+                    if (isValid) {
+                      addedWordToSentence.add(word);
+                      if (_selectedOrderIndex < _nOrder.length - 1) {
+                        _selectedOrderIndex++;
+                        _currentOrder = _nOrder[_selectedOrderIndex];
+                        wordSource = _getListByOrder(_currentOrder);
+                        setState(() {});
+                      } else {
+                        final value = await showAdaptiveDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => AlertDialog.adaptive(
+                            title: const Text("Done"),
+                            content: const Text('Process is completed!'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  String sentence =
+                                      addedWordToSentence.join(' ');
+                                  if (sentence.isNotEmpty) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop(sentence);
+                                  }
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                        _selectedOrderIndex = 0;
+                        _currentOrder = _nOrder[_selectedOrderIndex];
+                        wordSource = _getListByOrder(_currentOrder);
+                        setState(() {});
+                        if (context.mounted) {
+                          Navigator.of(context).pop(value);
+                        }
+                      }
+                    }
+                  },
+                );
+              } else {
+                return SingleChildScrollView(
+                  child: TableSelectorDesktop(
                     wordSource: wordSource,
-                    wLabel: '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
+                    wLabel:
+                        '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
                     onWordSelected: (isValid, word) async {
                       if (isValid) {
+                        addedWordToSentence.add(word);
                         if (_selectedOrderIndex < _nOrder.length - 1) {
                           _selectedOrderIndex++;
                           _currentOrder = _nOrder[_selectedOrderIndex];
                           wordSource = _getListByOrder(_currentOrder);
                           setState(() {});
                         } else {
-                          final value = await showAdaptiveDialog(
+                          await showAdaptiveDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (context) => AlertDialog.adaptive(
                               title: const Text("Done"),
                               content: const Text('Process is completed!'),
                               actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      String sentence = addedWordToSentence.join(' ');
-                                      if (sentence.isNotEmpty) {
-                                        Navigator.of(context).pop(); 
-                                        Navigator.of(context).pop(sentence);
-                                      }
-                                    },
-                                    child: const Text('OK'),
-                                  ),
+                                TextButton(
+                                  onPressed: () {
+                                    String sentence =
+                                        addedWordToSentence.join(' ');
+                                    if (sentence.isNotEmpty) {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop(sentence);
+                                    }
+                                  },
+                                  child: const Text('OK'),
+                                ),
                               ],
                             ),
                           );
@@ -73,60 +123,13 @@ class _MooncakeViewState extends State<MooncakeView> {
                           _currentOrder = _nOrder[_selectedOrderIndex];
                           wordSource = _getListByOrder(_currentOrder);
                           setState(() {});
-                          if (context.mounted) {
-                            Navigator.of(context).pop(value);
-                          }
-                          
                         }
-                        addedWordToSentence.add(word);
                       }
                     },
-                  );
-                } else {
-                  return SingleChildScrollView(
-                    child: TableSelectorDesktop(
-                      wordSource: wordSource,
-                      wLabel: '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
-                      onWordSelected: (isValid, word) async {
-                        if (isValid) {
-                          if (_selectedOrderIndex < _nOrder.length - 1) {
-                            _selectedOrderIndex++;
-                            _currentOrder = _nOrder[_selectedOrderIndex];
-                            wordSource = _getListByOrder(_currentOrder);
-                            setState(() {});
-                          } else {
-                            await showAdaptiveDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => AlertDialog.adaptive(
-                                title: const Text("Done"),
-                                content: const Text('Process is completed!'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      String sentence = addedWordToSentence.join(' ');
-                                      if (sentence.isNotEmpty) {
-                                        Navigator.of(context).pop(); 
-                                        Navigator.of(context).pop(sentence);
-                                      }
-                                    },
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
-                            _selectedOrderIndex = 0;
-                            _currentOrder = _nOrder[_selectedOrderIndex];
-                            wordSource = _getListByOrder(_currentOrder);
-                            setState(() {});
-                          }
-                          addedWordToSentence.add(word);
-                        }
-                      },
-                    ),
-                  );
-                }
-              }),
+                  ),
+                );
+              }
+            }),
     );
   }
 

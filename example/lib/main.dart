@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!context.mounted) return;
                 if (result != null && result.isNotEmpty) {
                   setState(() {
-                    _result = 'Password: $result';
+                    _result = result;
                   });
                 }
               },
