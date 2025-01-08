@@ -46,8 +46,8 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   List<String>? _gridWords;
 
   final FocusNode _focusNode = FocusNode();
-  // mobile [(up-down-up),(down-up-up),(up-down-down)] etc
-  // or force potrait ?
+  bool highlight = true; 
+
   @override
   void initState() {
     super.initState();
@@ -217,7 +217,6 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
   // Function to handle the word selection based on user input
   void _handleSelection() {
-    //TODO make this optional
     bool isHighlighted = false;
 
     for (var gridWord in _gridWords!) {
@@ -245,145 +244,173 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return RawKeyboardListener(
-      focusNode: _focusNode,
-      onKey: _handleKey,
-      autofocus: true,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final double cellSize =
-              (constraints.maxHeight / (_horizontalLabels!.length + 3))
-                  .clamp(40.0, 100.0);
-          const int rows = 32;
-          final double gridHeight = cellSize * rows;
-
-          return Column(
-            children: [
-              // Display the user input for visual feedback
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _userInput.toLowerCase(),
-                  style: const TextStyle(fontSize: 18),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.wLabel),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                highlight = !highlight;
+              });
+            },
+            child: Row(
+              children: [
+                const Text('Highlight:'),
+                Checkbox.adaptive(
+                  value: highlight,
+                  onChanged: (v) {
+                    setState(() {
+                      highlight = v ?? false;
+                    });
+                  },
                 ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              ],
+            ),
+          ),
+        ],
+      ),
+      body: RawKeyboardListener(
+        focusNode: _focusNode,
+        onKey: _handleKey,
+        autofocus: true,
+        child: SingleChildScrollView(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final double cellSize =
+                  (constraints.maxHeight / (_horizontalLabels!.length + 3))
+                      .clamp(40.0, 100.0);
+              const int rows = 32;
+              final double gridHeight = cellSize * rows;
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      _userInput.toLowerCase(),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
                       children: [
-                        SizedBox(width: cellSize),
-                        ..._horizontalLabels!.map((label) => Container(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(width: cellSize),
+                            ..._horizontalLabels!.map((label) => Container(
+                                  width: cellSize,
+                                  height: cellSize,
+                                  alignment: Alignment.center,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                          color: Colors.black, width: 0.5),
+                                    ),
+                                  ),
+                                  child: Text(label),
+                                )),
+                            SizedBox(width: cellSize),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
                               width: cellSize,
-                              height: cellSize,
-                              alignment: Alignment.center,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                      color: Colors.black, width: 0.5),
-                                ),
-                              ),
-                              child: Text(label),
-                            )),
-                        SizedBox(width: cellSize),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: cellSize,
-                          height: gridHeight,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: _verticalLeftLabels!
-                                  .map((label) => Container(
-                                        width: cellSize,
-                                        height: cellSize,
-                                        alignment: Alignment.centerRight,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            right: BorderSide(
-                                                color: Colors.black,
-                                                width: 0.5),
-                                          ),
-                                        ),
-                                        child: Text(label.toUpperCase()),
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GridView.builder(
-                            padding: EdgeInsets.zero,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: _horizontalLabels!.length,
-                              childAspectRatio: 1.5,
-                            ),
-                            itemCount: _gridWords!.length,
-                            itemBuilder: (context, index) {
-                              String gridWord = _gridWords![index]
-                                  .split('-')[0]
-                                  .toLowerCase();
-                              bool isHighlighted =
-                                  gridWord == _userInput.toLowerCase();
-
-                              return Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: isHighlighted
-                                      ? Colors.green.withOpacity(0.3)
-                                      : Colors.transparent,
-                                  border: Border.all(
-                                      color: Colors.black.withOpacity(0.5),
-                                      width: 0.5),
-                                ),
-                                child: Text(
-                                  _gridWords![index],
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                            width: cellSize,
-                            height: gridHeight,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: _verticalRightLabels!
-                                    .map((label) => Container(
-                                          width: cellSize,
-                                          height: cellSize,
-                                          alignment: Alignment.centerLeft,
-                                          decoration: const BoxDecoration(
-                                            border: Border(
-                                              left: BorderSide(
-                                                  color: Colors.black,
-                                                  width: 0.5),
+                              height: gridHeight,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: _verticalLeftLabels!
+                                      .map((label) => Container(
+                                            width: cellSize,
+                                            height: cellSize,
+                                            alignment: Alignment.centerRight,
+                                            decoration: const BoxDecoration(
+                                              border: Border(
+                                                right: BorderSide(
+                                                    color: Colors.black,
+                                                    width: 0.5),
+                                              ),
                                             ),
-                                          ),
-                                          child: Text(label),
-                                        ))
-                                    .toList(),
+                                            child: Text(label.toUpperCase()),
+                                          ))
+                                      .toList(),
+                                ),
                               ),
-                            )),
+                            ),
+                            Expanded(
+                              child: GridView.builder(
+                                padding: EdgeInsets.zero,
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: _horizontalLabels!.length,
+                                  childAspectRatio: 1.5,
+                                ),
+                                itemCount: _gridWords!.length,
+                                itemBuilder: (context, index) {
+                                  String gridWord = _gridWords![index]
+                                      .split('-')[0]
+                                      .toLowerCase();
+                                  bool isHighlighted = highlight &&
+                                      gridWord == _userInput.toLowerCase();
+
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isHighlighted
+                                          ? Colors.green.withOpacity(0.3)
+                                          : Colors.transparent,
+                                      border: Border.all(
+                                          color: Colors.black.withOpacity(0.5),
+                                          width: 0.5),
+                                    ),
+                                    child: Text(
+                                      _gridWords![index],
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                                width: cellSize,
+                                height: gridHeight,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: _verticalRightLabels!
+                                        .map((label) => Container(
+                                              width: cellSize,
+                                              height: cellSize,
+                                              alignment: Alignment.centerLeft,
+                                              decoration: const BoxDecoration(
+                                                border: Border(
+                                                  left: BorderSide(
+                                                      color: Colors.black,
+                                                      width: 0.5),
+                                                ),
+                                              ),
+                                              child: Text(label),
+                                            ))
+                                        .toList(),
+                                  ),
+                                )),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

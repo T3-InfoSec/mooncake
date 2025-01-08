@@ -85,47 +85,52 @@ class _MooncakeViewState extends State<MooncakeView> {
                 );
               } else {
                 return SingleChildScrollView(
-                  child: TableSelectorDesktop(
-                    wordSource: wordSource,
-                    wLabel:
-                        '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
-                    onWordSelected: (isValid, word) async {
-                      if (isValid) {
-                        addedWordToSentence.add(word);
-                        if (_selectedOrderIndex < _nOrder.length - 1) {
-                          _selectedOrderIndex++;
-                          _currentOrder = _nOrder[_selectedOrderIndex];
-                          wordSource = _getListByOrder(_currentOrder);
-                          setState(() {});
-                        } else {
-                          await showAdaptiveDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => AlertDialog.adaptive(
-                              title: const Text("Done"),
-                              content: const Text('Process is completed!'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    String sentence =
-                                        addedWordToSentence.join(' ');
-                                    if (sentence.isNotEmpty) {
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop(sentence);
-                                    }
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                          _selectedOrderIndex = 0;
-                          _currentOrder = _nOrder[_selectedOrderIndex];
-                          wordSource = _getListByOrder(_currentOrder);
-                          setState(() {});
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.8,
+                      maxWidth: MediaQuery.of(context).size.width,
+                    ),
+                    child: TableSelectorDesktop(
+                      wordSource: wordSource,
+                      wLabel:
+                          '${_selectedOrderIndex + 1} of ${_nOrder.length} - ($_currentOrder)',
+                      onWordSelected: (isValid, word) async {
+                        if (isValid) {
+                          addedWordToSentence.add(word);
+                          if (_selectedOrderIndex < _nOrder.length - 1) {
+                            _selectedOrderIndex++;
+                            _currentOrder = _nOrder[_selectedOrderIndex];
+                            wordSource = _getListByOrder(_currentOrder);
+                            setState(() {});
+                          } else {
+                            await showAdaptiveDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => AlertDialog.adaptive(
+                                title: const Text("Done"),
+                                content: const Text('Process is completed!'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      String sentence = addedWordToSentence.join(' ');
+                                      if (sentence.isNotEmpty) {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop(sentence);
+                                      }
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            _selectedOrderIndex = 0;
+                            _currentOrder = _nOrder[_selectedOrderIndex];
+                            wordSource = _getListByOrder(_currentOrder);
+                            setState(() {});
+                          }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
                 );
               }
