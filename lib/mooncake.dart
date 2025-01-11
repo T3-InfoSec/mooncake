@@ -1,13 +1,6 @@
+// TODO: Complete the copyright.
+// Copyright (c) 2024, ...
+
 library mooncake;
 
-import 'package:flutter/material.dart';
-import 'package:mooncake/src/mooncake_view.dart';
-
-class Mooncake {
-  static Future<String?> show(BuildContext context) async {
-    final result = await showDialog<String?>(context: context, builder: (context) => const MooncakeView());
-  
-    return result;
-  }
-}
-
+export 'src/widgets/mooncake_view.dart';

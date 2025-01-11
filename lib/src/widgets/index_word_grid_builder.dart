@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mooncake/src/mobile_comb_icons.dart';
+import 'package:mooncake/src/widgets/combination_icons.dart';
 
 class IndexWordGridBuilder extends StatelessWidget {
   const IndexWordGridBuilder({
