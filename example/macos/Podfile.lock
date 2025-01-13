@@ -1,0 +1,28 @@
+PODS:
+  - device_info_plus (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+  - mooncake (0.0.1):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - device_info_plus (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - mooncake (from `Flutter/ephemeral/.symlinks/plugins/mooncake/macos`)
+
+EXTERNAL SOURCES:
+  device_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  mooncake:
+    :path: Flutter/ephemeral/.symlinks/plugins/mooncake/macos
+
+SPEC CHECKSUMS:
+  device_info_plus: 1b14eed9bf95428983aed283a8d51cce3d8c4215
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  mooncake: 6fffdb3f2fa77e9cf7bba5b1c6752356a7b9136a
+
+PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
+
+COCOAPODS: 1.15.2
