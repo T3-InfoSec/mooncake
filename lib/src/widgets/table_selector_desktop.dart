@@ -18,26 +18,30 @@ class TableSelectorDesktop extends StatefulWidget {
 }
 
 class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
-  final List<String> keyboardCharacters = [
-    'a',
-    's',
-    'd',
-    'f',
-    'j',
-    'k',
-    'l',
-    ';'
-  ];
-  final List<String> leftLabelCharacters = [
-    'k',
-    'a',
-    's',
-    'd',
-    'f',
-    'j',
-    'l',
-    ';'
-  ];
+  List<String> keyboardCharacters = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
+  Set<String> trackSets = {};
+
+  bool isKeySetable = false;
+  String setableKeysCandidate = '';
+  final FocusNode keysNode = FocusNode();
+
+  _validateKeySetable(String value) {
+    final enteredKeys = value.toLowerCase().replaceAll(' ', '').split('');
+    trackSets = enteredKeys.toSet();
+
+    // Update the state if exactly 8 unique keys are provided
+    isKeySetable = trackSets.length == 8;
+    setState(() {});
+  }
+
+  _setKeys() {
+    if (trackSets.length == 8) {
+      keyboardCharacters = trackSets.toList();
+      _generateLabelsAndGridWords();
+      keysNode.nextFocus();
+      setState(() {});
+    }
+  }
 
   String _userInput = '';
   List<String>? _horizontalLabels;
@@ -46,7 +50,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   List<String>? _gridWords;
 
   final FocusNode _focusNode = FocusNode();
-  bool highlight = true; 
+  bool highlight = true;
 
   @override
   void initState() {
@@ -72,10 +76,9 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   void _generateLabelsAndGridWords() {
     final horizontalLabels = List.of(keyboardCharacters)..shuffle();
     final verticalLeftLabels = _generateShuffledLeftLabels();
-    final verticalRightLabels = _generateRepeatedRightLabels(
-        verticalLeftLabels.length, verticalLeftLabels);
-    final gridWords = _generateGridWordsWithLabels(horizontalLabels,
-        verticalLeftLabels, verticalRightLabels, 32, horizontalLabels.length);
+    final verticalRightLabels = _generateRepeatedRightLabels(verticalLeftLabels.length, verticalLeftLabels);
+    final gridWords = _generateGridWordsWithLabels(
+        horizontalLabels, verticalLeftLabels, verticalRightLabels, 32, horizontalLabels.length);
 
     setState(() {
       _horizontalLabels = horizontalLabels;
@@ -87,15 +90,14 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
   List<String> _generateShuffledLeftLabels() {
     List<List<String>> leftLabels = [];
-    for (var char in leftLabelCharacters) {
+    for (var char in keyboardCharacters) {
       leftLabels.add(List.filled(8, char));
     }
     leftLabels.shuffle();
     return leftLabels.expand((x) => x).toList();
   }
 
-  List<String> _generateRepeatedRightLabels(
-      int length, List<String> leftLabels) {
+  List<String> _generateRepeatedRightLabels(int length, List<String> leftLabels) {
     List<String> repeatedRightLabels = [];
 
     while (repeatedRightLabels.length < length) {
@@ -112,8 +114,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
           sameCharCount++;
         }
 
-        if (_isValidSwap(
-            repeatedRightLabels, i, j, leftLabels, sameCharCount)) {
+        if (_isValidSwap(repeatedRightLabels, i, j, leftLabels, sameCharCount)) {
           swapIndex = j;
           break;
         }
@@ -129,8 +130,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
     return repeatedRightLabels;
   }
 
-  bool _isValidSwap(List<String> list, int i, int j, List<String> leftLabels,
-      int sameCharCount) {
+  bool _isValidSwap(List<String> list, int i, int j, List<String> leftLabels, int sameCharCount) {
     if (list[j] == leftLabels[i] && sameCharCount > 1) {
       return false;
     }
@@ -147,11 +147,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
   }
 
   List<String> _generateGridWordsWithLabels(
-      List<String> topLabels,
-      List<String> leftLabels,
-      List<String> rightLabels,
-      int rowCount,
-      int colCount) {
+      List<String> topLabels, List<String> leftLabels, List<String> rightLabels, int rowCount, int colCount) {
     List<String> combinedWords = [];
     int wordIndex = 0;
 
@@ -160,8 +156,7 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
 
     for (int row = 0; row < rowCount; row++) {
       for (int col = 0; col < colCount; col++) {
-        String combinedLabel =
-            '${topLabels[col]}${leftLabels[row]}${rightLabels[row]}';
+        String combinedLabel = '${topLabels[col]}${leftLabels[row]}${rightLabels[row]}';
 
         // Ensure that we don't exceed the number of available unique words
         if (wordIndex >= shuffledWordSource.length) {
@@ -197,16 +192,14 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
       }
 
       // Add input if it's a valid character
-      if (['a', 's', 'd', 'f', 'j', 'k', 'l', ';']
-          .contains(key)) {
+      if (keyboardCharacters.contains(key)) {
         setState(() {
           _userInput += key; // Append valid key to the user input
         });
       }
 
       // Handle Backspace for correcting input
-      if (event.logicalKey == LogicalKeyboardKey.backspace &&
-          _userInput.isNotEmpty) {
+      if (event.logicalKey == LogicalKeyboardKey.backspace && _userInput.isNotEmpty) {
         setState(() {
           _userInput = '';
         });
@@ -270,146 +263,191 @@ class _TableSelectorDesktopState extends State<TableSelectorDesktop> {
           ),
         ],
       ),
-      body: RawKeyboardListener(
-        focusNode: _focusNode,
-        onKey: _handleKey,
-        autofocus: true,
-        child: SingleChildScrollView(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final double cellSize =
-                  (constraints.maxHeight / (_horizontalLabels!.length + 3))
-                      .clamp(40.0, 100.0);
-              const int rows = 32;
-              final double gridHeight = cellSize * rows;
+      body: SingleChildScrollView(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double cellSize = (constraints.maxHeight / (_horizontalLabels!.length + 3)).clamp(40.0, 100.0);
+            const int rows = 32;
+            final double gridHeight = cellSize * rows;
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _userInput.toLowerCase(),
-                      style: const TextStyle(fontSize: 18),
-                    ),
+            return Column(
+              children: [
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Text(
+                //     _userInput.toLowerCase(),
+                //     style: const TextStyle(fontSize: 18),
+                //   ),
+                // ),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  margin: const EdgeInsets.symmetric(horizontal: 64),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(width: cellSize),
-                            ..._horizontalLabels!.map((label) => Container(
-                                  width: cellSize,
-                                  height: cellSize,
-                                  alignment: Alignment.center,
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.black, width: 0.5),
-                                    ),
-                                  ),
-                                  child: Text(label),
-                                )),
-                            SizedBox(width: cellSize),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: cellSize,
-                              height: gridHeight,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: _verticalLeftLabels!
-                                      .map((label) => Container(
-                                            width: cellSize,
-                                            height: cellSize,
-                                            alignment: Alignment.centerRight,
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                right: BorderSide(
-                                                    color: Colors.black,
-                                                    width: 0.5),
-                                              ),
-                                            ),
-                                            child: Text(label.toUpperCase()),
-                                          ))
-                                      .toList(),
+                  child: Column(
+                    children: [
+                      const Row(
+                        spacing: 10,
+                        children: [
+                          Icon(Icons.info_outline),
+                          Text('Provide custom keys in the text field bellow, tap for more information'),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: TextFormField(
+                                focusNode: keysNode,
+                                onTap: () {
+                                  _focusNode.nextFocus();
+                                  keysNode.requestFocus();
+                                  setState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  labelText: keyboardCharacters.join(', '),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  border: InputBorder.none,
+                                  fillColor: Colors.deepPurple.withValues(alpha: 0.3),
+                                  filled: true,
                                 ),
-                              ),
-                            ),
-                            Expanded(
-                              child: GridView.builder(
-                                padding: EdgeInsets.zero,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: _horizontalLabels!.length,
-                                  childAspectRatio: 1.5,
-                                ),
-                                itemCount: _gridWords!.length,
-                                itemBuilder: (context, index) {
-                                  String gridWord = _gridWords![index]
-                                      .split('-')[0]
-                                      .toLowerCase();
-                                  bool isHighlighted = highlight &&
-                                      gridWord == _userInput.toLowerCase();
-
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: isHighlighted
-                                          ? Colors.green.withOpacity(0.3)
-                                          : Colors.transparent,
-                                      border: Border.all(
-                                          color: Colors.black.withOpacity(0.5),
-                                          width: 0.5),
-                                    ),
-                                    child: Text(
-                                      _gridWords![index],
-                                      style: const TextStyle(fontSize: 15),
-                                    ),
-                                  );
+                                maxLength: 8,
+                                onChanged: (value) {
+                                  _validateKeySetable(value);
                                 },
                               ),
                             ),
-                            SizedBox(
+                          ),
+                          OutlinedButton(
+                            onPressed: isKeySetable ? () => _setKeys() : null,
+                            child: const Text('Set Keys'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+      
+                GestureDetector(
+                  onTap: () {
+                    keysNode.nextFocus();
+                    _focusNode.requestFocus();
+                  },
+                  child: RawKeyboardListener(
+                    focusNode: _focusNode,
+                    onKey: keysNode.hasFocus ? null : _handleKey,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: cellSize),
+                              ..._horizontalLabels!.map((label) => Container(
+                                    width: cellSize,
+                                    height: cellSize,
+                                    alignment: Alignment.center,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(color: Colors.black, width: 0.5),
+                                      ),
+                                    ),
+                                    child: Text(label),
+                                  )),
+                              SizedBox(width: cellSize),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
                                 width: cellSize,
                                 height: gridHeight,
                                 child: SingleChildScrollView(
                                   child: Column(
-                                    children: _verticalRightLabels!
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: _verticalLeftLabels!
                                         .map((label) => Container(
                                               width: cellSize,
                                               height: cellSize,
-                                              alignment: Alignment.centerLeft,
+                                              alignment: Alignment.centerRight,
                                               decoration: const BoxDecoration(
                                                 border: Border(
-                                                  left: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 0.5),
+                                                  right: BorderSide(color: Colors.black, width: 0.5),
                                                 ),
                                               ),
-                                              child: Text(label),
+                                              child: Text(label.toUpperCase()),
                                             ))
                                         .toList(),
                                   ),
-                                )),
-                          ],
-                        ),
-                      ],
+                                ),
+                              ),
+                              Expanded(
+                                child: GridView.builder(
+                                  padding: EdgeInsets.zero,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: _horizontalLabels!.length,
+                                    childAspectRatio: 1.5,
+                                  ),
+                                  itemCount: _gridWords!.length,
+                                  itemBuilder: (context, index) {
+                                    String gridWord = _gridWords![index].split('-')[0].toLowerCase();
+                                    bool isHighlighted = highlight && gridWord == _userInput.toLowerCase();
+
+                                    return Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isHighlighted ? Colors.green.withOpacity(0.3) : Colors.transparent,
+                                        border: Border.all(color: Colors.black.withOpacity(0.5), width: 0.5),
+                                      ),
+                                      child: Text(
+                                        _gridWords![index],
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                  width: cellSize,
+                                  height: gridHeight,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: _verticalRightLabels!
+                                          .map((label) => Container(
+                                                width: cellSize,
+                                                height: cellSize,
+                                                alignment: Alignment.centerLeft,
+                                                decoration: const BoxDecoration(
+                                                  border: Border(
+                                                    left: BorderSide(color: Colors.black, width: 0.5),
+                                                  ),
+                                                ),
+                                                child: Text(label),
+                                              ))
+                                          .toList(),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
